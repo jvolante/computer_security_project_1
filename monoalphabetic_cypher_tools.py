@@ -52,7 +52,7 @@ class cypher_decriptor:
     self.calibrated_three_letter_words_freq = get_re_result_freq(text, three_letter_words, groupnum=1)
 
 
-  def decrypt(self, input_file):
+  def guess_initial_mappings(self, input_file):
     """
     Starts decrypting the cyphertext file by providing an initial mapping of the characters.
     :param input_file: File containing cyphertext to decrypt
@@ -63,15 +63,13 @@ class cypher_decriptor:
 
     counts = Counter([character for character in self.cypher_text if ord('a') <= ord(character) <= ord('z')])
     total_chars = sum([counts[character] for character in counts])
-    input_character_freq = {character : counts[character] / float(total_chars) for character in counts}
+    self.input_character_freq = {character : counts[character] / float(total_chars) for character in counts}
 
-    self.mapping = self.__initial_map_frequencies(input_character_freq)
+    self.mapping = self.__initial_map_frequencies(self.input_character_freq)
 
     initial_plaintext = replace_dict(self.cypher_text, self.mapping)
 
     char_before_e_freq = get_re_result_freq(initial_plaintext, char_before_e)
-
-
 
   def get_mapping(self):
     return self.mapping
@@ -81,8 +79,25 @@ class cypher_decriptor:
     self.mapping = mapping
 
 
+  def update_mapping(self, update_dict):
+    self.mapping.update(update_dict)
+
+
+  def get_calibrated_frequency_dict(self):
+    return self.calibrated_character_freq
+
+
+  def get_input_frequency_dict(self):
+    return self.input_character_freq
+
 
   def __initial_map_frequencies(self, input_freq):
+    """
+    Pairs letters in the calibration file to letters in the cyphertext file by ordering them from greatest to least
+    frequency and matching the pairs.
+    :param input_freq:
+    :return:
+    """
     input_freq_most_to_least = sorted(input_freq.items(), key=lambda x: -x[1])
     cal_freq_most_to_least = sorted(input_freq.items(), key=lambda x: -x[1])
     return {input_char[0]:output_char[0] for input_char, output_char in zip(input_freq_most_to_least, cal_freq_most_to_least)}

@@ -71,32 +71,64 @@ class cypher_decriptor:
 
     char_before_e_freq = get_re_result_freq(initial_plaintext, char_before_e)
 
+
+  def decrypt(self):
+    """
+    applies the mapping dict to the cyphertext and returns the result
+    :return: decrypted cyphertext, str
+    """
+    return replace_dict(self.cypher_text, self.mapping)
+
+
   def get_mapping(self):
+    """
+    gets the character to character mapping currently being used by the object
+    :return: dict containing character to charcter mapping for characters a-z
+    """
     return self.mapping
 
 
   def set_mapping(self, mapping):
-    self.mapping = mapping
+    """
+    changes the mapping dict being used by the object completely
+    :param mapping: new char to char mapping dict for ALL characters a-z
+    :return: None
+    """
+    self.mapping = {x.lower() : y.lower for x, y in mapping.iteritems()}
 
 
   def update_mapping(self, update_dict):
-    self.mapping.update(update_dict)
+    """
+    updates the mapping dict for new values
+    :param update_dict: dict containing character to character mapping characters between a and z
+    :return: None
+    """
+    self.mapping.update({x.lower(): y.lower() for x, y in update_dict.iteritems()})
 
 
   def get_calibrated_frequency_dict(self):
+    """
+    returns the letter frequency dictionary for the calibration file
+    :return: dict containing letter frequency table
+    """
     return self.calibrated_character_freq
 
 
   def get_input_frequency_dict(self):
+    """
+    returns the letter frequency dictionary for the cyphertext file
+    :return: dict containing letter frequency table
+    """
     return self.input_character_freq
 
 
   def __initial_map_frequencies(self, input_freq):
     """
     Pairs letters in the calibration file to letters in the cyphertext file by ordering them from greatest to least
+    Cyphertext letter maps to plaintext letter in the returned dictionary.
     frequency and matching the pairs.
     :param input_freq:
-    :return:
+    :return: dictionary containing cyphertext letter to plaintext letter mapping.
     """
     input_freq_most_to_least = sorted(input_freq.items(), key=lambda x: -x[1])
     cal_freq_most_to_least = sorted(input_freq.items(), key=lambda x: -x[1])

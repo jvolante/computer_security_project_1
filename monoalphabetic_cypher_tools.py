@@ -8,6 +8,10 @@ char_before_e = re.compile(r"(\w)e", re.IGNORECASE)
 char_before_h = re.compile(r"(\w)h", re.IGNORECASE)
 three_letter_words = re.compile(r"(\w{3})")
 
+
+def testCommit():
+  pass
+
 def replace_dict(string, d):
   pattern = re.compile(r'\b(' + '|'.join(d.keys()) + r')\b')
   result = pattern.sub(lambda x: d[x.group()], string)

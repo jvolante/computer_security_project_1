@@ -63,6 +63,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
+        self.connectUiEvents(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -85,4 +86,15 @@ class Ui_MainWindow(object):
         # give the edit boxes placeholders
         for i in range(26):
             self.edit[string.uppercase[i]].setText(_translate("MainWindow", string.lowercase[i], None))
+
+    def connectUiEvents(self, MainWindow):
+        for c in string.uppercase:
+            self.edit[c].returnPressed.connect(self.editModified(c, MainWindow))
+
+    def editModified(self, key, MainWindow):
+        def _editModified():
+            text, ok = QtGui.QInputDialog.getText(MainWindow, QtCore.QString(key), self.edit[key].text())
+        return _editModified
+
+
 

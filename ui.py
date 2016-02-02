@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         """
 
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(681, 693)
+        MainWindow.resize(681, 650)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
 
@@ -61,16 +61,6 @@ class Ui_MainWindow(object):
         self.plaintext.setObjectName(_fromUtf8("plaintext"))
 
         MainWindow.setCentralWidget(self.centralWidget)
-        self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 681, 21))
-        self.menuBar.setObjectName(_fromUtf8("menuBar"))
-        MainWindow.setMenuBar(self.menuBar)
-        self.mainToolBar = QtGui.QToolBar(MainWindow)
-        self.mainToolBar.setObjectName(_fromUtf8("mainToolBar"))
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.mainToolBar)
-        self.statusBar = QtGui.QStatusBar(MainWindow)
-        self.statusBar.setObjectName(_fromUtf8("statusBar"))
-        MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

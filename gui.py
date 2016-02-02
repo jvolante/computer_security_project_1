@@ -1,1 +1,1 @@
-from PySide import Qt, QtGui
+from PyQt4 import Qt, QtGui

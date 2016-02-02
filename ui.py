@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.label = {}
         for i in range(26):
             self.label[string.uppercase[i]] = QtGui.QLabel(self.centralWidget)
-            self.label[string.uppercase[i]].setGeometry(QtCore.QRect(10, 100 + 20 * i, 16, 16))
+            self.label[string.uppercase[i]].setGeometry(QtCore.QRect(15, 103 + 20 * i, 16, 16))
             self.label[string.uppercase[i]].setObjectName(_fromUtf8("label" + format(string.uppercase[i])))
 
         # create edit boxes

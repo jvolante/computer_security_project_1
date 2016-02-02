@@ -1,17 +1,55 @@
 from collections import Counter
 import operator
 import re
-
-char_after_th = re.compile(r"th(\w)", re.IGNORECASE)
-char_after_t = re.compile(r"t(\w)", re.IGNORECASE)
-char_before_e = re.compile(r"(\w)e", re.IGNORECASE)
-char_before_h = re.compile(r"(\w)h", re.IGNORECASE)
 three_letter_words = re.compile(r"(\w{3})")
-
 
 def replace_dict(string, d):
   pattern = re.compile(r'\b(' + '|'.join(d.keys()) + r')\b')
   result = pattern.sub(lambda x: d[x.group()], string)
+  return result
+
+
+def reverse_dict(dictionary):
+  """
+  Returns a new dictionary with keys that are the original dictionary's values and values
+  that are the original dictionary's keys.
+  :param dictionary:
+  :return: dictionary
+  """
+  result = dict()
+  for k, v in dictionary.iteritems():
+    if v in result:
+      raise ValueError("Values in the dicitonary must be unique")
+    else:
+      result[v] = k
+
+  return result
+
+
+def get_key_with_value(dictionary, value):
+  """
+  returns the first key found with the specified value.
+  if dictionary is not an ordereddict then this function is not stable
+  :param dictionary: dictionary containing key/value pairs
+  :param value: value to search for
+  :return: key with specified value
+  """
+  for k, v in dictionary.iteritems():
+    if value == v:
+      return k
+
+
+def get_sub_dict_for_values(d, values):
+  """
+  Gets the key/value pairs with the specified values.
+  :param d: dictionary
+  :param values: values
+  :return: dictionary
+  """
+  result = dict()
+  for k, v in d.iteritems():
+    if v in values:
+      result.update({k, v})
   return result
 
 
@@ -35,6 +73,11 @@ def get_largest_key_value_pair(dictionary):
   """
   return max(dictionary.iteritems(), key=operator.itemgetter(1))
 
+def get_key_with_largest_value(dictionary):
+  """
+  Returns the key with the highest magnitude value.
+  """
+  return get_largest_key_value_pair(dictionary)[0]
 
 class cypher_decriptor:
 
@@ -46,9 +89,8 @@ class cypher_decriptor:
     counts = Counter([character for character in text if ord('a') <= ord(character) <= ord('z')])
     total_chars = sum([counts[character] for character in counts])
     self.calibrated_character_freq = {character : total_chars / counts[character] for character in counts}
-    self.calibrated_char_after_t_freq = get_re_result_freq(text, char_after_t, groupnum=1)
-    self.calibrated_char_before_e_freq = get_re_result_freq(text, char_before_e, groupnum=1)
-    self.calibrated_char_before_h_freq = get_re_result_freq(text, char_before_h, groupnum=1)
+    self.calibrated_char_after_freq = {chr(ch) : get_re_result_freq(text, re.compile(chr(ch) + r"(\w)"), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
+    self.calibrated_char_before_freq = {chr(ch) : get_re_result_freq(text, re.compile(r"(\w)" + chr(ch)), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
     self.calibrated_three_letter_words_freq = get_re_result_freq(text, three_letter_words, groupnum=1)
 
 
@@ -58,19 +100,99 @@ class cypher_decriptor:
     :param input_file: File containing cyphertext to decrypt
     :return:
     """
+    decoded_letters = set()
     with open(input_file) as f:
       self.cypher_text = f.read().lower()
 
     counts = Counter([character for character in self.cypher_text if ord('a') <= ord(character) <= ord('z')])
     total_chars = sum([counts[character] for character in counts])
-    self.input_character_freq = {character : counts[character] / float(total_chars) for character in counts}
 
-    self.mapping = self.__initial_map_frequencies(self.input_character_freq)
+    # get frequency dictionaries that correspond to
+    self.cyphertext_character_freq = {character : counts[character] / float(total_chars) for character in counts}
+    self.cyphertext_char_after_freq = {chr(ch) : get_re_result_freq(self.cypher_text, re.compile(chr(ch) + r"(\w)"), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
+    self.cyphertext_char_before_freq = {chr(ch) : get_re_result_freq(self.cypher_text, re.compile(r"(\w)" + chr(ch)), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
+    self.cyphertext_three_letter_words_freq = get_re_result_freq(self.cypher_text, three_letter_words, groupnum=1)
 
-    initial_plaintext = replace_dict(self.cypher_text, self.mapping)
+    self.mapping = self.__initial_map_frequencies(self.cyphertext_character_freq)
 
-    char_before_e_freq = get_re_result_freq(initial_plaintext, char_before_e)
+    # assume e is mapped correctly
+    decoded_letters.add('e')
 
+    # the character that preceeds e is the same the majority of the time, map accordingly
+    self.__map_preceding_letter('e')
+
+    # h is now probably mapped correctly
+    decoded_letters.add('h')
+
+    # the character that preceeds h is the same the majority of the time, map accordingly
+    self.__map_preceding_letter('h')
+
+    # assume t is now mapped correctly
+    decoded_letters.add('t')
+
+    # now that we have the letters t h and e out of the way that knocks out the word "the". The three letter groups
+    # "and" and "you" trade blows as the second most common three letter group, but we can use the frequency of the
+    # first letter of the group to differentiate them. "tha" as in "that" ends up being the third most common three
+    # letter grouping in many cases, but since we know the letters t and h we can throw it out.
+    reverse_mapping = reverse_dict(self.mapping)
+    tmp_three_letter_words = self.cyphertext_three_letter_words_freq.copy()
+    del tmp_three_letter_words[replace_dict("the", reverse_mapping)]
+
+    # try to throw out other three letter groups such as "tha" and "thi" (that and this)
+    candidates = list()
+    while len(candidates) < 2:
+      key = get_key_with_largest_value(tmp_three_letter_words)
+
+      for c in replace_dict(key, self.mapping):
+        if c in decoded_letters:
+          continue
+
+      candidates.append(key)
+
+    # the key where the first letter is more common is probably the word and and the other is probably the word you
+    if self.cyphertext_character_freq[candidates[0][0]] > self.cyphertext_character_freq[candidates[1][0]]:
+      and_letters = candidates[0]
+      you_letters = candidates[1]
+    else:
+      and_letters = candidates[1]
+      you_letters = candidates[0]
+
+    self.swap_mapping(and_letters[0], 'a')
+    self.swap_mapping(and_letters[1], 'n')
+    self.swap_mapping(and_letters[2], 'd')
+
+    self.swap_mapping(you_letters[0], 'y')
+    self.swap_mapping(you_letters[1], 'o')
+    self.swap_mapping(you_letters[2], 'u')
+
+    decoded_letters |= set('andyou')
+
+    # delete this because it is no longer up to date and we don't want to use it by accident
+    del reverse_mapping
+
+    # we can find q by finding the letter that has "u" after it most of the time
+    u_letter = you_letters[2]
+
+    candidates = dict()
+
+    for k, v in self.cyphertext_char_after_freq.iteritems():
+      if self.mapping[k] in decoded_letters:
+        continue
+      elif get_key_with_largest_value(v) == u_letter:
+        candidates[k] = v[u_letter]
+
+    q_letter = get_key_with_largest_value(candidates)
+
+    self.swap_mapping(q_letter, 'q')
+
+    decoded_letters.add('q')
+
+    
+  def __map_preceding_letter(self, letter):
+    plaintext_before_e = get_largest_key_value_pair(self.calibrated_char_before_freq[letter])
+    cyphertext_before_e = get_largest_key_value_pair(self.cyphertext_char_before_freq[get_key_with_value(self.mapping, letter)])
+
+    self.swap_mapping(cyphertext_before_e[0], plaintext_before_e[0])
 
   def decrypt(self):
     """
@@ -78,6 +200,22 @@ class cypher_decriptor:
     :return: decrypted cyphertext, str
     """
     return replace_dict(self.cypher_text, self.mapping)
+
+
+  def swap_mapping(self, key, value):
+    """
+    swaps the values of key and the key that has the specified value
+    :param key: cyphertext letter to make new mapping for
+    :param value: new character to be mapped to cyphertext letter
+    :return: None.
+    """
+    tmp = self.mapping[key]
+    self.mapping[key] = value
+
+    for k, v in self.mapping.iteritems():
+      if value == v:
+        self.mapping[k] = tmp
+        break
 
 
   def get_mapping(self):
@@ -119,7 +257,7 @@ class cypher_decriptor:
     returns the letter frequency dictionary for the cyphertext file
     :return: dict containing letter frequency table
     """
-    return self.input_character_freq
+    return self.cyphertext_character_freq
 
 
   def __initial_map_frequencies(self, input_freq):

@@ -5,6 +5,10 @@ from ui import Ui_MainWindow
 
 class DecrypterWindow(QtGui.QMainWindow):
     def __init__(self):
+        """
+        Initializes the DecrypterWindow
+        """
+
         super(DecrypterWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -12,6 +16,9 @@ class DecrypterWindow(QtGui.QMainWindow):
 
 
 def main():
+    """
+    The main method
+    """
     app = QtGui.QApplication(sys.argv)
     win = DecrypterWindow()
     sys.exit(app.exec_())

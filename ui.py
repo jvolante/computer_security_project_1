@@ -17,12 +17,17 @@ except AttributeError:
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        """
+        creates window parts
+        :param MainWindow: The main window
+        """
+
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(681, 693)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
 
-        # buttons
+        # create buttons
         self.calibrateButton = QtGui.QPushButton(self.centralWidget)
         self.calibrateButton.setGeometry(QtCore.QRect(10, 10, 111, 23))
         self.calibrateButton.setObjectName(_fromUtf8("calibrateButton"))
@@ -33,21 +38,21 @@ class Ui_MainWindow(object):
         self.exportButton.setGeometry(QtCore.QRect(10, 70, 111, 23))
         self.exportButton.setObjectName(_fromUtf8("exportButton"))
 
-        # labels
+        # create labels
         self.label = {}
         for i in range(26):
             self.label[string.uppercase[i]] = QtGui.QLabel(self.centralWidget)
             self.label[string.uppercase[i]].setGeometry(QtCore.QRect(10, 100 + 20 * i, 16, 16))
             self.label[string.uppercase[i]].setObjectName(_fromUtf8("label" + format(string.uppercase[i])))
 
-        # edits
+        # create edit boxes
         self.edit = {}
         for i in range(26):
             self.edit[string.uppercase[i]] = QtGui.QLineEdit(self.centralWidget)
             self.edit[string.uppercase[i]].setGeometry(QtCore.QRect(30, 100 + 20 * i, 21, 20))
             self.edit[string.uppercase[i]].setObjectName(_fromUtf8("edit" + string.uppercase[i]))
 
-        # text boxes
+        # create text boxes
         self.ciphertext = QtGui.QPlainTextEdit(self.centralWidget)
         self.ciphertext.setGeometry(QtCore.QRect(130, 10, 541, 310))
         self.ciphertext.setObjectName(_fromUtf8("ciphertext"))
@@ -71,18 +76,23 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "Decrypt Stuff 3000", None))
+        """
+        Gives text & labels & stuff to parts of the window
+        :param MainWindow: the main window, I guess
+        """
 
-        # buttons
+        MainWindow.setWindowTitle(_translate("MainWindow", "Stuff Decrypter 3000", None))
+
+        # label buttons
         self.calibrateButton.setText(_translate("MainWindow", "Calibrate", None))
         self.importButton.setText(_translate("MainWindow", "Import ciphertext", None))
         self.exportButton.setText(_translate("MainWindow", "Export plaintext", None))
 
-        # labels
+        # give the labels text
         for i in range(26):
             self.label[string.uppercase[i]].setText(_translate("MainWindow", string.uppercase[i] + ":", None))
 
-        # edits
+        # give the edit boxes placeholders
         for i in range(26):
             self.edit[string.uppercase[i]].setText(_translate("MainWindow", string.lowercase[i], None))
 

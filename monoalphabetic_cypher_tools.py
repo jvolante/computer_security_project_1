@@ -130,6 +130,12 @@ class cypher_decriptor:
     # assume t is now mapped correctly
     decoded_letters.add('t')
 
+    # the character that preceeds t is the same the majority of the time, map accordingly
+    self.__map_preceding_letter('t')
+
+    #assume s is now mapped correctly
+    decoded_letters.add('s')
+
     # now that we have the letters t h and e out of the way that knocks out the word "the". The three letter groups
     # "and" and "you" trade blows as the second most common three letter group, but we can use the frequency of the
     # first letter of the group to differentiate them. "tha" as in "that" ends up being the third most common three
@@ -187,7 +193,7 @@ class cypher_decriptor:
 
     decoded_letters.add('q')
 
-    
+
   def __map_preceding_letter(self, letter):
     plaintext_before_e = get_largest_key_value_pair(self.calibrated_char_before_freq[letter])
     cyphertext_before_e = get_largest_key_value_pair(self.cyphertext_char_before_freq[get_key_with_value(self.mapping, letter)])

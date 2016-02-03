@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
-        self.connectUiEvents(MainWindow)
+        # self.connectUiEvents()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -87,14 +87,18 @@ class Ui_MainWindow(object):
         for i in range(26):
             self.edit[string.uppercase[i]].setText(_translate("MainWindow", string.lowercase[i], None))
 
-    def connectUiEvents(self, MainWindow):
-        for c in string.uppercase:
-            self.edit[c].returnPressed.connect(self.editModified(c, MainWindow))
+    def connectCalibrateButton(self, f):
+        self.calibrateButton.clicked.connect(f)
 
-    def editModified(self, key, MainWindow):
-        def _editModified():
-            text, ok = QtGui.QInputDialog.getText(MainWindow, QtCore.QString(key), self.edit[key].text())
-        return _editModified
+    def connectImportButton(self, f):
+        self.importButton.clicked.connect(f)
+
+    def connectExportButton(self, f):
+        self.exportButton.clicked.connect(f)
+
+    def connectTextModified(self, f):
+        for c in string.uppercase:
+            self.edit[c].returnPressed.connect(f)
 
 
 

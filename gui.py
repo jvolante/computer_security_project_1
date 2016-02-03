@@ -21,7 +21,7 @@ class DecrypterWindow(QtGui.QMainWindow):
         self.ui.connectExportButton(self.exportButtonHandler)
         self.ui.connectTextModified(self.editModifiedHandler)
 
-        self.decrypter = cypher_decriptor("")
+        self.decrypter = None
 
         self.show()
 
@@ -36,13 +36,13 @@ class DecrypterWindow(QtGui.QMainWindow):
         # get path to ciphertext
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
-        # pass path to self.decrypter.guess_initial_mappings
-        self.decrypter.guess_initial_mappings(filename)
-
         # display ciphertext in upper pane
         with open(filename) as f:
             ciphertext = f.read()
             self.ui.ciphertext.setPlainText(QtCore.QString(ciphertext))
+
+        # pass path to self.decrypter.guess_initial_mappings
+        self.decrypter.guess_initial_mappings(filename)
 
         # display mappings
         mappings = self.decrypter.get_mapping()

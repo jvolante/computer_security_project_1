@@ -16,10 +16,11 @@ class DecrypterWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         # connect event handlers
-        self.ui.connectCalibrateButton(self.calibrateButtonHandler)
-        self.ui.connectImportButton(self.importButtonHandler)
-        self.ui.connectExportButton(self.exportButtonHandler)
-        self.ui.connectTextModified(self.editModifiedHandler)
+        self.ui.calibrateButton.clicked.connect(self.calibrateButtonHandler)
+        self.ui.importButton.clicked.connect(self.importButtonHandler)
+        self.ui.exportButton.clicked.connect(self.exportButtonHandler)
+        for c in string.uppercase:
+            self.ui.edit[c].textEdited.connect(self.editModifiedHandler)
 
         self.decrypter = None
 

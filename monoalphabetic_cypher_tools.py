@@ -4,7 +4,7 @@ import re
 three_letter_words = re.compile(r"(\w{3})")
 
 def replace_dict(string, d):
-  pattern = re.compile(r'\b(' + '|'.join(d.keys()) + r')\b')
+  pattern = re.compile('|'.join(d.keys()))
   result = pattern.sub(lambda x: d[x.group()], string)
   return result
 
@@ -88,7 +88,7 @@ class cypher_decriptor:
 
     counts = Counter([character for character in text if ord('a') <= ord(character) <= ord('z')])
     total_chars = sum([counts[character] for character in counts])
-    self.calibrated_character_freq = {character : total_chars / counts[character] for character in counts}
+    self.calibrated_character_freq = {character : counts[character] / float(total_chars) for character in counts}
     self.calibrated_char_after_freq = {chr(ch) : get_re_result_freq(text, re.compile(chr(ch) + r"(\w)"), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
     self.calibrated_char_before_freq = {chr(ch) : get_re_result_freq(text, re.compile(r"(\w)" + chr(ch)), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
     self.calibrated_three_letter_words_freq = get_re_result_freq(text, three_letter_words, groupnum=1)
@@ -113,7 +113,7 @@ class cypher_decriptor:
     self.cyphertext_char_before_freq = {chr(ch) : get_re_result_freq(self.cypher_text, re.compile(r"(\w)" + chr(ch)), groupnum=1) for ch in range(ord('a'), ord('z') + 1)}
     self.cyphertext_three_letter_words_freq = get_re_result_freq(self.cypher_text, three_letter_words, groupnum=1)
 
-    self.mapping = self.__initial_map_frequencies(self.cyphertext_character_freq)
+    self.mapping = self.__initial_map_frequencies()
 
     # assume e is mapped correctly
     decoded_letters.add('e')
@@ -216,11 +216,11 @@ class cypher_decriptor:
     :return: None.
     """
     tmp = self.mapping[key]
-    self.mapping[key] = value
 
     for k, v in self.mapping.iteritems():
       if value == v:
         self.mapping[k] = tmp
+        self.mapping[key] = value
         break
 
 
@@ -238,7 +238,7 @@ class cypher_decriptor:
     :param mapping: new char to char mapping dict for ALL characters a-z
     :return: None
     """
-    self.mapping = {x.lower() : y.lower for x, y in mapping.iteritems()}
+    self.mapping = {x.lower() : y.lower() for x, y in mapping.iteritems()}
 
 
   def update_mapping(self, update_dict):
@@ -266,7 +266,7 @@ class cypher_decriptor:
     return self.cyphertext_character_freq
 
 
-  def __initial_map_frequencies(self, input_freq):
+  def __initial_map_frequencies(self):
     """
     Pairs letters in the calibration file to letters in the cyphertext file by ordering them from greatest to least
     Cyphertext letter maps to plaintext letter in the returned dictionary.
@@ -274,6 +274,6 @@ class cypher_decriptor:
     :param input_freq:
     :return: dictionary containing cyphertext letter to plaintext letter mapping.
     """
-    input_freq_most_to_least = sorted(input_freq.items(), key=lambda x: -x[1])
-    cal_freq_most_to_least = sorted(input_freq.items(), key=lambda x: -x[1])
-    return {input_char[0]:output_char[0] for input_char, output_char in zip(input_freq_most_to_least, cal_freq_most_to_least)}
+    cypher_freq_most_to_least = sorted(self.cyphertext_character_freq.items(), key=lambda x: -x[1])
+    cal_freq_most_to_least = sorted(self.calibrated_character_freq.items(), key=lambda x: -x[1])
+    return {input_char[0]:output_char[0] for input_char, output_char in zip(cypher_freq_most_to_least, cal_freq_most_to_least)}

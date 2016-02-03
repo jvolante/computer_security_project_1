@@ -87,18 +87,5 @@ class Ui_MainWindow(object):
         for i in range(26):
             self.edit[string.uppercase[i]].setText(_translate("MainWindow", string.lowercase[i], None))
 
-    def connectCalibrateButton(self, f):
-        self.calibrateButton.clicked.connect(f)
-
-    def connectImportButton(self, f):
-        self.importButton.clicked.connect(f)
-
-    def connectExportButton(self, f):
-        self.exportButton.clicked.connect(f)
-
-    def connectTextModified(self, f):
-        for c in string.uppercase:
-            self.edit[c].returnPressed.connect(f)
-
 
 

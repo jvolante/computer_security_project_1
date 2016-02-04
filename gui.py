@@ -37,13 +37,13 @@ class DecrypterWindow(QtGui.QMainWindow):
         # get path to ciphertext
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
-        # display ciphertext in upper pane
-        with open(filename) as f:
-            ciphertext = f.read()
-            self.ui.ciphertext.setPlainText(QtCore.QString(ciphertext))
-
         # pass path to self.decrypter.guess_initial_mappings
         self.decrypter.guess_initial_mappings(filename)
+
+        # display ciphertext in upper pane
+        # with open(filename) as f:
+        #     ciphertext = f.read()
+        self.ui.ciphertext.setPlainText(QtCore.QString(self.decrypter.cypher_text))
 
         # display mappings
         mappings = self.decrypter.get_mapping()

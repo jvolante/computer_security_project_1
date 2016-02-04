@@ -31,6 +31,8 @@ class DecrypterWindow(QtGui.QMainWindow):
 
         self.show()
 
+        self.setFixedSize(self.size())
+
     def calibrateButtonHandler(self):
         """
         Imports a calibration file and uses it to set letter frequencies

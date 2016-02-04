@@ -187,11 +187,13 @@ class cypher_decriptor:
       elif get_key_with_largest_value(v) == u_letter:
         candidates[k] = v[u_letter]
 
-    q_letter = get_key_with_largest_value(candidates)
+    try:
+      q_letter = get_key_with_largest_value(candidates)
 
-    self.swap_mapping(q_letter, 'q')
-
-    decoded_letters.add('q')
+      self.swap_mapping(q_letter, 'q')
+      decoded_letters.add('q')
+    except ValueError:
+      pass
 
 
   def __map_preceding_letter(self, letter):

@@ -22,6 +22,12 @@ class DecrypterWindow(QtGui.QMainWindow):
         for c in string.lowercase:
             self.ui.edit[c].textEdited.connect(self.editModifiedHandler)
 
+        # disable unavailable functionality
+        self.ui.importButton.setDisabled(True)
+        self.ui.exportButton.setDisabled(True)
+        for c in string.lowercase:
+            self.ui.edit[c].setDisabled(True)
+
         self.decrypter = None
 
         self.show()
@@ -32,6 +38,9 @@ class DecrypterWindow(QtGui.QMainWindow):
 
         # pass path to new cypher_decriptor object
         self.decrypter = cypher_decriptor(filename)
+
+        # enable import button
+        self.ui.importButton.setDisabled(False)
 
     def importButtonHandler(self):
         # get path to ciphertext
@@ -55,6 +64,11 @@ class DecrypterWindow(QtGui.QMainWindow):
 
         # show results in lower pane
         self.ui.plaintext.setPlainText(QtCore.QString(plaintext))
+
+        # enable export button and editing mappings
+        self.ui.exportButton.setDisabled(False)
+        for c in string.lowercase:
+            self.ui.edit[c].setDisabled(False)
 
     def exportButtonHandler(self):
         # save plaintext as file

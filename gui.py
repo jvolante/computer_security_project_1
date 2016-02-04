@@ -47,7 +47,7 @@ class DecrypterWindow(QtGui.QMainWindow):
 
         # display mappings
         mappings = self.decrypter.get_mapping()
-        for k, v in self.ui.edit:
+        for k, v in self.ui.edit.iteritems():
             v.setText(QtCore.QString(mappings[k]))
 
         # call self.decrypter.decrypt
@@ -66,7 +66,7 @@ class DecrypterWindow(QtGui.QMainWindow):
         mappings = { c: str(self.ui.edit[c].text()) for c in string.lowercase }
         self.decrypter.set_mapping(mappings)
         plaintext = self.decrypter.decrypt()
-        self.ui.plaintext.setPlainText(QtCore.Qstring(plaintext))
+        self.ui.plaintext.setPlainText(plaintext)
 
 
 

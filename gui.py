@@ -40,11 +40,12 @@ class DecrypterWindow(QtGui.QMainWindow):
         # get path to calibration file
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
-        # pass path to new cypher_decriptor object
-        self.decrypter = cypher_decriptor(filename)
+        if len(filename) > 0:
+            # pass path to new cypher_decriptor object
+            self.decrypter = cypher_decriptor(filename)
 
-        # enable import button
-        self.ui.importButton.setDisabled(False)
+            # enable import button
+            self.ui.importButton.setDisabled(False)
 
     def importButtonHandler(self):
         """
@@ -53,27 +54,28 @@ class DecrypterWindow(QtGui.QMainWindow):
         # get path to ciphertext
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
-        # pass path to self.decrypter.guess_initial_mappings
-        self.decrypter.guess_initial_mappings(filename)
+        if len(filename) > 0:
+            # pass path to self.decrypter.guess_initial_mappings
+            self.decrypter.guess_initial_mappings(filename)
 
-        # display ciphertext in upper pane
-        self.ui.ciphertext.setPlainText(QtCore.QString(self.decrypter.cypher_text))
+            # display ciphertext in upper pane
+            self.ui.ciphertext.setPlainText(QtCore.QString(self.decrypter.cypher_text))
 
-        # display mappings
-        mappings = self.decrypter.get_mapping()
-        for k, v in self.ui.edit.iteritems():
-            v.setText(QtCore.QString(mappings[k]))
+            # display mappings
+            mappings = self.decrypter.get_mapping()
+            for k, v in self.ui.edit.iteritems():
+                v.setText(QtCore.QString(mappings[k]))
 
-        # decrypt ciphertext
-        plaintext = self.decrypter.decrypt()
+            # decrypt ciphertext
+            plaintext = self.decrypter.decrypt()
 
-        # show results in lower pane
-        self.ui.plaintext.setPlainText(QtCore.QString(plaintext))
+            # show results in lower pane
+            self.ui.plaintext.setPlainText(QtCore.QString(plaintext))
 
-        # enable export button and editing mappings
-        self.ui.exportButton.setDisabled(False)
-        for c in string.lowercase:
-            self.ui.edit[c].setDisabled(False)
+            # enable export button and editing mappings
+            self.ui.exportButton.setDisabled(False)
+            for c in string.lowercase:
+                self.ui.edit[c].setDisabled(False)
 
     def exportButtonHandler(self):
         """

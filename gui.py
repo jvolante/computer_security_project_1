@@ -19,7 +19,7 @@ class DecrypterWindow(QtGui.QMainWindow):
         self.ui.calibrateButton.clicked.connect(self.calibrateButtonHandler)
         self.ui.importButton.clicked.connect(self.importButtonHandler)
         self.ui.exportButton.clicked.connect(self.exportButtonHandler)
-        for c in string.uppercase:
+        for c in string.lowercase:
             self.ui.edit[c].textEdited.connect(self.editModifiedHandler)
 
         self.decrypter = None
@@ -37,13 +37,13 @@ class DecrypterWindow(QtGui.QMainWindow):
         # get path to ciphertext
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
-        # display ciphertext in upper pane
-        with open(filename) as f:
-            ciphertext = f.read()
-            self.ui.ciphertext.setPlainText(QtCore.QString(ciphertext))
-
         # pass path to self.decrypter.guess_initial_mappings
         self.decrypter.guess_initial_mappings(filename)
+
+        # display ciphertext in upper pane
+        # with open(filename) as f:
+        #     ciphertext = f.read()
+        self.ui.ciphertext.setPlainText(QtCore.QString(self.decrypter.cypher_text))
 
         # display mappings
         mappings = self.decrypter.get_mapping()
@@ -63,8 +63,10 @@ class DecrypterWindow(QtGui.QMainWindow):
             f.write(self.decrypter.decrypt())
 
     def editModifiedHandler(self):
-        mappings = { c: str(self.ui.edit[c].text()) for c in string.uppercase }
+        mappings = { c: str(self.ui.edit[c].text()) for c in string.lowercase }
         self.decrypter.set_mapping(mappings)
+        plaintext = self.decrypter.decrypt()
+        self.ui.plaintext.setPlainText(QtCore.Qstring(plaintext))
 
 
 

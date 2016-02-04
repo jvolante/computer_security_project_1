@@ -41,16 +41,16 @@ class Ui_MainWindow(object):
         # create labels
         self.label = {}
         for i in range(26):
-            self.label[string.uppercase[i]] = QtGui.QLabel(self.centralWidget)
-            self.label[string.uppercase[i]].setGeometry(QtCore.QRect(15, 103 + 20 * i, 16, 16))
-            self.label[string.uppercase[i]].setObjectName(_fromUtf8("label" + format(string.uppercase[i])))
+            self.label[string.lowercase[i]] = QtGui.QLabel(self.centralWidget)
+            self.label[string.lowercase[i]].setGeometry(QtCore.QRect(15, 103 + 20 * i, 16, 16))
+            self.label[string.lowercase[i]].setObjectName(_fromUtf8("label" + format(string.lowercase[i])))
 
         # create edit boxes
         self.edit = {}
         for i in range(26):
-            self.edit[string.uppercase[i]] = QtGui.QLineEdit(self.centralWidget)
-            self.edit[string.uppercase[i]].setGeometry(QtCore.QRect(30, 100 + 20 * i, 21, 20))
-            self.edit[string.uppercase[i]].setObjectName(_fromUtf8("edit" + string.uppercase[i]))
+            self.edit[string.lowercase[i]] = QtGui.QLineEdit(self.centralWidget)
+            self.edit[string.lowercase[i]].setGeometry(QtCore.QRect(30, 100 + 20 * i, 21, 20))
+            self.edit[string.lowercase[i]].setObjectName(_fromUtf8("edit" + string.lowercase[i]))
 
         # create text boxes
         self.ciphertext = QtGui.QPlainTextEdit(self.centralWidget)
@@ -81,11 +81,11 @@ class Ui_MainWindow(object):
 
         # give the labels text
         for i in range(26):
-            self.label[string.uppercase[i]].setText(_translate("MainWindow", string.uppercase[i] + ":", None))
+            self.label[string.lowercase[i]].setText(_translate("MainWindow", string.lowercase[i] + ":", None))
 
         # give the edit boxes placeholders
         for i in range(26):
-            self.edit[string.uppercase[i]].setText(_translate("MainWindow", string.lowercase[i], None))
+            self.edit[string.lowercase[i]].setText(_translate("MainWindow", string.lowercase[i], None))
 
 
 

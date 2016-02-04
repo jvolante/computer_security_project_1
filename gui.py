@@ -10,7 +10,6 @@ class DecrypterWindow(QtGui.QMainWindow):
         """
         Initializes the DecrypterWindow
         """
-
         super(DecrypterWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -22,18 +21,35 @@ class DecrypterWindow(QtGui.QMainWindow):
         for c in string.lowercase:
             self.ui.edit[c].textEdited.connect(self.editModifiedHandler)
 
+        # disable unavailable functionality
+        self.ui.importButton.setDisabled(True)
+        self.ui.exportButton.setDisabled(True)
+        for c in string.lowercase:
+            self.ui.edit[c].setDisabled(True)
+
         self.decrypter = None
 
         self.show()
 
+        self.setFixedSize(self.size())
+
     def calibrateButtonHandler(self):
+        """
+        Imports a calibration file and uses it to set letter frequencies
+        """
         # get path to calibration file
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
         # pass path to new cypher_decriptor object
         self.decrypter = cypher_decriptor(filename)
 
+        # enable import button
+        self.ui.importButton.setDisabled(False)
+
     def importButtonHandler(self):
+        """
+        Imports a ciphertext file and tries to decrypt it
+        """
         # get path to ciphertext
         filename = QtGui.QFileDialog.getOpenFileName(self)
 
@@ -41,8 +57,6 @@ class DecrypterWindow(QtGui.QMainWindow):
         self.decrypter.guess_initial_mappings(filename)
 
         # display ciphertext in upper pane
-        # with open(filename) as f:
-        #     ciphertext = f.read()
         self.ui.ciphertext.setPlainText(QtCore.QString(self.decrypter.cypher_text))
 
         # display mappings
@@ -50,19 +64,29 @@ class DecrypterWindow(QtGui.QMainWindow):
         for k, v in self.ui.edit.iteritems():
             v.setText(QtCore.QString(mappings[k]))
 
-        # call self.decrypter.decrypt
+        # decrypt ciphertext
         plaintext = self.decrypter.decrypt()
 
         # show results in lower pane
         self.ui.plaintext.setPlainText(QtCore.QString(plaintext))
 
+        # enable export button and editing mappings
+        self.ui.exportButton.setDisabled(False)
+        for c in string.lowercase:
+            self.ui.edit[c].setDisabled(False)
+
     def exportButtonHandler(self):
-        # save plaintext as file
+        """
+        Exports the putative plaintext as a text file
+        """
         filename = QtGui.QFileDialog.getSaveFileName(self)
         with open(filename, 'w') as f:
             f.write(self.decrypter.decrypt())
 
     def editModifiedHandler(self):
+        """
+        Updates the mappings and re-decrypts the ciphertext every time mappings are modified
+        """
         mappings = { c: str(self.ui.edit[c].text()) for c in string.lowercase }
         self.decrypter.set_mapping(mappings)
         plaintext = self.decrypter.decrypt()
